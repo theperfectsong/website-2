@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socius — Find your study people (Functional)</title>
+    <style>
+        :root {
+            --bg-color: #f6f5f0;
+            --sidebar-bg: #eeece4;
+            --card-bg: #ffffff;
+            --primary-green: #234e38;
+            --hover-green: #1a3c2b;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #d1d5db;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styling */
+        aside {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 24px 16px;
+        }
+
+        .logo-area {
+            font-size: 1.25rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 32px;
+            padding-left: 8px;
+        }
+
+        .logo-area span {
+            color: var(--primary-green);
+        }
+
+        nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.2s;
+        }
+
+        .nav-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-btn.active {
+            background-color: #e2dfd3;
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            background-color: rgba(255, 255, 255, 0.6);
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        .sidebar-footer p {
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .user-mini {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background-color: var(--primary-green);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Main Content Styling */
+        main {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .view-section {
+            display: none;
+            max-width: 700px;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--primary-green);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--hover-green);
+        }
+
+        .success-message {
+            margin-top: 12px;
+            color: var(--primary-green);
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: none;
+        }
+
+        .placeholder-box {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside>
+        <div>
+            <div class="logo-area">
+                socius <span>✳</span>
+            </div>
+            <nav>
+                <button class="nav-btn" onclick="switchView('discover', event)">◈ Discover</button>
+                <button class="nav-btn" onclick="switchView('connections', event)">♡ My connections</button>
+                <button class="nav-btn" onclick="switchView('study-plans', event)">▦ Study plans</button>
+                <button class="nav-btn active" onclick="switchView('profile', event)" id="btn-profile">◎ My profile</button>
+            </nav>
+        </div>
+
+        <div class="sidebar-footer">
+            <p>✧ A little help. A big difference.</p>
+            <small>Your next "I get it now" moment starts here.</small>
+            <div class="user-mini">
+                <div class="avatar" id="sidebar-avatar">L</div>
+                <div>
+                    <strong id="sidebar-name">Luis</strong>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">College student</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main>
+        <!-- PROFILE VIEW -->
+        <section id="view-profile" class="view-section active">
+            <h1>Make it your own.</h1>
+            <p class="subtitle">Find support that fits your classes and your schedule.</p>
+            
+            <div class="card">
+                <h3 style="margin-bottom: 20px;">Your study profile</h3>
+                <form id="profile-form" onsubmit="saveProfile(event)">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" value="Luis">
+                    </div>
+                    <div class="form-group">
+                        <label for="college">College</label>
+                        <input type="text" id="college" value="Central Piedmont">
+                    </div>
+                    <div class="form-group">
+                        <label for="classes">Classes (separate with commas)</label>
+                        <input type="text" id="classes" placeholder="e.g. MAT-171, ENG-111">
+                    </div>
+                    <div class="form-group">
+                        <label for="help">What could you use help with?</label>
+                        <input type="text" id="help" placeholder="e.g. Understanding probability before my next exam">
+                    </div>
+                    <div class="form-group">
+                        <label for="availability">When are you free?</label>
+                        <input type="text" id="availability" placeholder="e.g. Tuesdays and Thursdays after 3 PM">
+                    </div>
+                    <button type="submit" class="btn-primary">Save profile</button>
+                    <div id="save-success" class="success-message">✓ Profile saved successfully!</div>
+                </form>
+            </div>
+        </section>
+
+        <!-- DISCOVER VIEW -->
+        <section id="view-discover" class="view-section">
+            <h1>Discover Study Partners</h1>
+            <p class="subtitle">Connect with peers taking the same classes at your campus.</p>
+            <div class="placeholder-box">
+                <h3>No active matches right now</h3>
+                <p>Fill out your classes in your profile to start finding study groups!</p>
+            </div>
+        </section>
+
+        <!-- CONNECTIONS VIEW -->
+        <section id="view-connections" class="view-section">
+            <h1>My Connections</h1>
+            <p class="subtitle">People you've connected with for study sessions.</p>
+            <div class="placeholder-box">
+                <h3>Your connection list is empty</h3>
+                <p>Once you reach out to peers in the Discover tab, they will appear here.</p>
+            </div>
+        </section>
+
+        <!-- STUDY PLANS VIEW -->
+        <section id="view-study-plans" class="view-section">
+            <h1>Study Plans</h1>
+            <p class="subtitle">Your scheduled sessions and shared goals.</p>
+            <div class="placeholder-box">
+                <h3>No upcoming study sessions</h3>
+                <p>Schedule a session with a connection to see your study plans here.</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function switchView(viewName, event) {
+            document.querySelectorAll('.view-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById('view-' + viewName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function saveProfile(event) {
+            event.preventDefault();
+            const nameInput = document.getElementById('name').value;
+            
+            document.getElementById('sidebar-name').textContent = nameInput;
+            document.getElementById('sidebar-avatar').textContent = nameInput.charAt(0).toUpperCase();
+
+            const successDiv = document.getElementById('save-success');
+            successDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
